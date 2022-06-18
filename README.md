@@ -1,7 +1,7 @@
 Macro Maker by Vincent Tang 2022
 
 
-Before running main.py run "pip install requirements.txt"
+Before running main.py run 'pip install requirements.txt'
 
 
 This python software can record mouse and keyboard inputs and store it in a csv.

@@ -23,19 +23,20 @@ class Listener:
         mouse_listener.start()
         keyboard_listener.start()
         self._start_time = time.time()
+        print('record initiated')
 
     def on_click(self, x, y, button, pressed):
         if not self._run:
             return
-        print(f"Mouse clicked at {x} {y} {button} {pressed}")
+        print(f'Mouse clicked at {x} {y} {button} {pressed}')
         if pressed:
-            self._script.append(["on_click", self.get_time_passed(), x, y, button])
+            self._script.append(['on_click', self.get_time_passed(), x, y, button])
 
     def on_scroll(self, x, y, dx, dy):
         if not self._run:
             return
-        print(f"Mouse scrolled at {x} {y} {dx} {dy}")
-        self._script.append(["on_scroll", self.get_time_passed(), x, y, dx, dy])
+        print(f'Mouse scrolled at {x} {y} {dx} {dy}')
+        self._script.append(['on_scroll', self.get_time_passed(), x, y, dx, dy])
 
     def on_press(self, key):
         if not self._run:
@@ -55,19 +56,20 @@ class Listener:
             return
         if self._current_total_pressed == 1:
             pressed_key = self._current_pressed_keys[0]
-            self._script.append(["on_press", self.get_time_passed(), pressed_key])
+            self._script.append(['on_press', self.get_time_passed(), pressed_key])
         else:
             pressed_keys = self._current_pressed_keys
-            self._script.append(["on_hotkey", self.get_time_passed(), pressed_keys])
+            self._script.append(['on_hotkey', self.get_time_passed(), pressed_keys])
         self._current_pressed_keys = []
         self._current_total_pressed = 0
 
     # Waits for escape to be pressed and saves the script in a csv file
-    def wait_finish(self):
+    def wait_finish(self, url):
         self._script = []
         while self._run:
             time.sleep(0.1)
-        ScriptManager.saveScript(self._script)
+        # Store in temp file
+        ScriptManager.saveScript(self._script, url)
 
     def get_time_passed(self):
         end_time = time.time()
@@ -75,7 +77,7 @@ class Listener:
         return time_passed
 
     # Converts key input from pynput into a human readable format
-    # e.g. "Key.alt_1" -> "alt"
+    # e.g. 'Key.alt_1' -> 'alt'
     @staticmethod
     def parse_key(key):
         parsed_key = str(key)   

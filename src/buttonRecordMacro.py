@@ -4,6 +4,7 @@ from src.button import Button
 from src.functions.listener import Listener
 
 
+# This button is clicked to start recording the macro
 class ButtonRecordMacro(Button):
 
     def __init__(self, window):
@@ -19,6 +20,9 @@ class ButtonRecordMacro(Button):
     def clickme(self):
         listener = Listener()
         thread1 = threading.Thread(target=listener.listen)
-        thread2 = threading.Thread(target=listener.wait_finish)
+        thread2 = threading.Thread(target=listener.wait_finish, args=(self._window.get_temp_url(),))
         thread1.start()
         thread2.start()
+        # Change the file location to temp.csv
+        temp_url = self._window.get_temp_url()
+        self._window.change_url(temp_url)

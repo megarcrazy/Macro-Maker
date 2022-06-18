@@ -4,6 +4,7 @@ from src.functions.macroRunner import MacroRunner
 from src.functions.scriptManager import ScriptManager
 
 
+# This button is clicked to run a recorded macro
 class ButtonRunMacro(Button):
 
     def __init__(self, window):
@@ -18,6 +19,6 @@ class ButtonRunMacro(Button):
         btn.clicked.connect(self.clickme)
 
     def clickme(self):
-        script_array = ScriptManager.loadScript()
+        self._macro_runner.reset()
+        script_array = ScriptManager.loadScript(self._window.get_url())
         self._macro_runner.runScript(script_array)
-    

@@ -11,10 +11,14 @@ class MacroRunner:
     def __init__(self):
         self._escaped = False
     
+    def reset(self):
+        self._escaped = False
+
     # Runs the mouse click script and the rest of the script in parallel
     # This is to add a duration in mouse movement to its destination
     def runScript(self, script_array):
         print('you ran the script')
+        print(script_array)
         self.listen()
         MacroRunner.compileScript(script_array)
         mouse_click_script, other_script = self.splitScript(script_array)
@@ -34,7 +38,10 @@ class MacroRunner:
     
     def on_press(self, key):
         if key == pynput.keyboard.Key.esc:
-            print("you escaped")
+            # Check if already escaped
+            if self._escaped:
+                return
+            print('you escaped')
             self._escaped = True
         return False
 

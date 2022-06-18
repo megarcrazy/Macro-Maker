@@ -35,7 +35,7 @@ class MacroCommands:
         try:
             pyautogui.press(key)
         except:
-            print("cannot find key")
+            print('cannot find key')
 
     @staticmethod
     def command_hotkey(time, keys):
@@ -45,4 +45,4 @@ class MacroCommands:
         try:
             pyautogui.hotkey(*keys)
         except:
-            print("cannot find one of the keys")
+            print('cannot find one of the keys')
