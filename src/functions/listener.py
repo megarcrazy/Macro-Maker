@@ -5,8 +5,9 @@ from src.functions.scriptManager import ScriptManager
 
 class Listener:
 
-    def __init__(self):
-        self._run = True
+    def __init__(self, window):
+        self._window = window
+        self._escaped = False
         self._script = []
         self._start_time = 0
         self._current_total_pressed = 0
@@ -26,24 +27,24 @@ class Listener:
         print('record initiated')
 
     def on_click(self, x, y, button, pressed):
-        if not self._run:
+        if self._escaped:
             return
         print(f'Mouse clicked at {x} {y} {button} {pressed}')
         if pressed:
             self._script.append(['on_click', self.get_time_passed(), x, y, button])
 
     def on_scroll(self, x, y, dx, dy):
-        if not self._run:
+        if self._escaped:
             return
         print(f'Mouse scrolled at {x} {y} {dx} {dy}')
         self._script.append(['on_scroll', self.get_time_passed(), x, y, dx, dy])
 
     def on_press(self, key):
-        if not self._run:
+        if self._escaped:
             return
         # If escape key detected, end listener
         if key == pynput.keyboard.Key.esc:
-            self._run = False
+            self._escaped = True
             return
         print(f'Key pressed: {key}')
         self._current_total_pressed += 1
@@ -66,10 +67,11 @@ class Listener:
     # Waits for escape to be pressed and saves the script in a csv file
     def wait_finish(self, url):
         self._script = []
-        while self._run:
+        while not self._escaped:
             time.sleep(0.1)
         # Store in temp file
         ScriptManager.saveScript(self._script, url)
+        self._window.change_status_record_escaped()
 
     def get_time_passed(self):
         end_time = time.time()

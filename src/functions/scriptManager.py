@@ -4,6 +4,7 @@ import src.settings as settings
 
 class ScriptManager:
 
+    # Inputs script into a csv file as an array
     @staticmethod
     def saveScript(script_array, url):
         try:
@@ -14,6 +15,7 @@ class ScriptManager:
         except:
             print('An error has occured script not saved')
 
+    # Extracts the script array from the csv file
     @staticmethod
     def loadScript(url):
         print(url)

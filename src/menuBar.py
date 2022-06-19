@@ -1,7 +1,7 @@
 import PyQt5
-import os
 from src.windowObject import WindowObject
 from src.functions.scriptManager import ScriptManager
+import src.settings as settings
 
 
 class MenuBar(WindowObject):
@@ -9,6 +9,7 @@ class MenuBar(WindowObject):
     def __init__(self, window):
         super().__init__(window)
         self.initUI()
+        self._default_folder_location = self._window.get_directory() + settings.DEFAULT_SAVE_FOLDER
 
     def initUI(self):
         main_menu = self._window.menuBar()
@@ -24,14 +25,14 @@ class MenuBar(WindowObject):
         file_menu.addAction(open_menu)
 
     def OpenAction(self):
-        url, _ = PyQt5.QtWidgets.QFileDialog.getOpenFileName()
+        instruction = 'Save script file'
+        url, _ = PyQt5.QtWidgets.QFileDialog.getOpenFileName(
+            self._window, instruction, self._default_folder_location, settings.FILE_TYPE
+        )
         print(url)
-        print(self.check_valid_url(url))
-        if not self.check_valid_url(url):
-            return
-        self._window.change_url(url)
+        self._window.choose_url(url)
         print('o-poo-n')
-        
+
     def addSaveAsAction(self, file_menu):
         save_as_menu = PyQt5.QtWidgets.QAction(self._window)
         save_as_menu.setObjectName('actionSaveAs')
@@ -41,23 +42,10 @@ class MenuBar(WindowObject):
 
     # Copies the script from temp.csv and stores in a target url
     def SaveAsAction(self):
-        directory = self._window.get_directory()
+        instruction = 'Save script file'
         url, _ = PyQt5.QtWidgets.QFileDialog.getSaveFileName(
-            self._window, 'Save script file', directory, 'CSV (Comma delimited) (*.csv)'
+            self._window, instruction, self._default_folder_location, settings.FILE_TYPE
         )
-        print(url)
-        if not self.check_valid_url(url):
-            return
         self._window.change_url(url)
         script_array = ScriptManager.loadScript(self._window.get_temp_url())
         ScriptManager.saveScript(script_array, url)
-
-    @staticmethod
-    def check_valid_url(url):
-        if url.split('/')[-1] == 'temp.csv':
-            print('temp.csv is a reserved name. please use another')
-            return False
-        elif url.split('.')[-1] != 'csv':
-            print('please open a csv file')
-            return False
-        return True

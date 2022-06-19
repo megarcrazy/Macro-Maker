@@ -1,14 +1,16 @@
-from PyQt5.QtWidgets import QWidget
+
 import PyQt5
-import src.settings
+from PyQt5.QtWidgets import QMainWindow
+import src.settings as settings
 from src.buttonRecordMacro import ButtonRecordMacro
 from src.buttonRunMacro import ButtonRunMacro
 from src.menuBar import MenuBar
 from src.informationTextBox import InformationTextBox
-from src.fileManager import FileManager
+from src.functions.fileManager import FileManager
+import src.constants as c
 
 
-class WindowMacroMaker(PyQt5.QtWidgets.QMainWindow):
+class WindowMacroMaker(QMainWindow):
     def __init__(self, directory):
         super().__init__()
         self._directory = directory
@@ -34,13 +36,35 @@ class WindowMacroMaker(PyQt5.QtWidgets.QMainWindow):
 
     # Storage location to store the script temporarily
     def get_temp_url(self):
-        temp_url = src.settings.TEMP_FILE
+        temp_url = settings.TEMP_FILE
         return temp_url
 
     def get_url(self):
         url = self._file_manager.get_url()
         return url
-    
+
+    # Change text box message
+    def change_status(self, status):
+        self._information_text_box.change_instruction(status)
+
     def change_url(self, url):
         self._file_manager.change_url(url)
-        self._information_text_box.change_text(url)
+        self._information_text_box.change_url_text(url)
+        if url.split('/')[-1] == 'temp.csv':
+            print('temp.csv is a reserved name. please use another')
+            self.change_status(c.INSTRUCTION_RECORD_STARTED)
+    
+    # Change status message for opening or saving files
+    def choose_url(self, url):
+        if url.split('/')[-1] == 'temp.csv':
+            self.change_status(c.INSTRUCTION_ERROR_RESERVE_FILE)
+            return
+        elif url.split('.')[-1] != 'csv':
+            self.change_status(c.INSTRUCTION_WRONG_FILE_TYPE)
+            return
+        self.change_url(url)
+        self.change_status(c.INSTRUCTION_SUCCESSFULLY_OPENED_FILE)
+
+    # Change status message for ending macro record
+    def change_status_record_escaped(self):
+        self.change_status(c.INSTRUCTION_RECORD_ESCAPED)

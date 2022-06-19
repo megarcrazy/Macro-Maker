@@ -4,14 +4,19 @@ import pynput
 from ast import literal_eval
 from src.functions.macroCommands import MacroCommands
 import src.settings as settings
+import src.constants as c
 
 
 class MacroRunner:
 
     def __init__(self):
+        self._script1_finish = False
+        self._script2_finish = False
         self._escaped = False
     
     def reset(self):
+        self._script1_finish = False
+        self._script2_finish = False
         self._escaped = False
 
     # Runs the mouse click script and the rest of the script in parallel
@@ -23,10 +28,10 @@ class MacroRunner:
         MacroRunner.compileScript(script_array)
         mouse_click_script, other_script = self.splitScript(script_array)
         mouse_click_script_thread = threading.Thread(
-            target=self.runScriptParallel, args=(mouse_click_script,)
+            target=self.runScriptParallel, args=(mouse_click_script, c.SCRIPT_TYPE_MOUSE_CLICK,)
         )
         other_script_thread = threading.Thread(
-            target=self.runScriptParallel, args=(other_script,)
+            target=self.runScriptParallel, args=(other_script, c.SCRIPT_TYPE_OTHER,)
         )
         mouse_click_script_thread.start()
         other_script_thread.start()
@@ -58,7 +63,7 @@ class MacroRunner:
                 other_script.append(command)
         return mouse_click_script, other_script
     
-    def runScriptParallel(self, script):
+    def runScriptParallel(self, script, script_type):
         start_time = time.time()
         while script:
             if self._escaped:
@@ -68,7 +73,18 @@ class MacroRunner:
             command_time_next = float(script[0][1])
             if command_time_next < time_passed:
                 MacroRunner.runCommand(script)
+        self.checkFinished(script_type)
 
+    def checkFinished(self, script_type):
+        if script_type == c.SCRIPT_TYPE_MOUSE_CLICK:
+            self._script1_finish = True
+        elif script_type == c.SCRIPT_TYPE_OTHER:
+            self._script2_finish = True
+        
+        if self._script1_finish and self._script2_finish:
+            self._escaped = True
+        print('Script finished')
+        
     # Finds the command catagory and activates the corresponding function
     # options: 'on_click', 'on_scroll', 'on_press', 'on_hotkey'
     @staticmethod
