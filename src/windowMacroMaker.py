@@ -15,6 +15,7 @@ class WindowMacroMaker(QMainWindow):
         super().__init__()
         self._directory = directory
         self._file_manager = FileManager()
+        self._running = False
         self._initUI()
         
     def _initUI(self):

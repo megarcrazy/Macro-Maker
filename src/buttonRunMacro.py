@@ -9,7 +9,6 @@ class ButtonRunMacro(Button):
 
     def __init__(self, window):
         super().__init__(window)
-        self._macro_runner = MacroRunner()
         self._initialise()
 
     def _initialise(self):
@@ -20,6 +19,8 @@ class ButtonRunMacro(Button):
 
     # Run script on click
     def _clickme(self):
-        self._macro_runner.reset()
+        if self._check_running():
+            return
+        macro_runner = MacroRunner(self._window)
         script_array = ScriptManager.loadScript(self._window.get_url())
-        self._macro_runner.runScript(script_array)
+        macro_runner.runScript(script_array)

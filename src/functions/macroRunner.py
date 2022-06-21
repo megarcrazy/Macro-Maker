@@ -9,12 +9,8 @@ import src.constants as c
 
 class MacroRunner:
 
-    def __init__(self):
-        self._script1_finish = False
-        self._script2_finish = False
-        self._escaped = False
-    
-    def reset(self):
+    def __init__(self, window):
+        self._window = window
         self._script1_finish = False
         self._script2_finish = False
         self._escaped = False
@@ -22,6 +18,7 @@ class MacroRunner:
     # Runs the mouse click script and the rest of the script in parallel
     # This is to add a duration in mouse movement to its destination
     def runScript(self, script_array):
+        self._window._running = True
         print('you ran the script')
         print(script_array)
         self._listen()
@@ -83,7 +80,8 @@ class MacroRunner:
         
         if self._script1_finish and self._script2_finish:
             self._escaped = True
-        print('Script finished')
+            self._window._running = False
+            print('Parallel script finished')
         
     # Finds the command catagory and activates the corresponding function
     # options: 'on_click', 'on_scroll', 'on_press', 'on_hotkey'

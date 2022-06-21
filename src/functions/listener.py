@@ -13,15 +13,19 @@ class Listener:
         self._start_time = 0
         self._current_total_pressed = 0
         self._current_pressed_keys = []
-
+        
     def run_listener(self):
+        self._window._running = True
+        
         # Detect user input for mouse and keyboard
         thread1 = threading.Thread(target=self._listen)
+
         # Wait for listener to end and save script into a temporary file
         thread2 = threading.Thread(target=self._wait_finish, args=(self._window.get_temp_url(),))
+
         thread1.start()
         thread2.start()
-
+    
     # Read mouse and keyboard input and start timer
     def _listen(self):
         mouse_listener = pynput.mouse.Listener(
@@ -43,6 +47,7 @@ class Listener:
         # Store in temp file
         ScriptManager.saveScript(self._script, url)
         self._window.change_status_record_escaped()
+        self._window._running = False
 
     def _on_click(self, x, y, button, pressed):
         if self._escaped:

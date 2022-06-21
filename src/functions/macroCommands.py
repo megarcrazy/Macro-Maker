@@ -10,7 +10,6 @@ class MacroCommands:
 
     @staticmethod
     def command_click(time, x, y, button):
-        print(f'you {button} clicked at {time}s at {x} {y}')
         if not settings.TRIGGER_RUN:
             return
         if button is None:
@@ -18,6 +17,8 @@ class MacroCommands:
         pyautogui.FAILSAFE = False
         pyautogui.moveTo(x=x, y=y, duration=settings.DELAY)
         pyautogui.click(button=button)
+        time_clicked = round(float(time) + settings.DELAY, 2)
+        print(f'you {button} clicked at {time_clicked}s at {x} {y}')
 
     @staticmethod
     def command_scroll(time, dx, dy):

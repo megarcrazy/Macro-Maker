@@ -18,6 +18,8 @@ class ButtonRecordMacro(Button):
 
     # Load script on click
     def _clickme(self):
+        if self._check_running():
+            return
         listener = Listener(self._window)
         listener.run_listener()
         # Change the file location to temp.csv for saving
