@@ -15,17 +15,17 @@ class WindowMacroMaker(QMainWindow):
         super().__init__()
         self._directory = directory
         self._file_manager = FileManager()
-        self.initUI()
+        self._initUI()
         
-    def initUI(self):
-        self.setWindow()
+    def _initUI(self):
+        self._setWindow()
         self._toolBar = MenuBar(self)
         self._button_record_macro = ButtonRecordMacro(self)
         self._button_run_macro = ButtonRunMacro(self)
         self._information_text_box = InformationTextBox(self)
         self.show()
     
-    def setWindow(self):
+    def _setWindow(self):
         self.setGeometry(100, 100, 600, 400)
         self.setWindowIcon(PyQt5.QtGui.QIcon(self._directory + '/images/mouse.jpg'))
         self.setWindowTitle('WindowMacroMaker')
@@ -43,28 +43,28 @@ class WindowMacroMaker(QMainWindow):
         url = self._file_manager.get_url()
         return url
 
-    # Change text box message
-    def change_status(self, status):
-        self._information_text_box.change_instruction(status)
-
     def change_url(self, url):
         self._file_manager.change_url(url)
         self._information_text_box.change_url_text(url)
         if url.split('/')[-1] == 'temp.csv':
             print('temp.csv is a reserved name. please use another')
-            self.change_status(c.INSTRUCTION_RECORD_STARTED)
+            self._change_status(c.INSTRUCTION_RECORD_STARTED)
+
+    # Change text box message
+    def _change_status(self, status):
+        self._information_text_box.change_instruction(status)
     
     # Change status message for opening or saving files
     def choose_url(self, url):
         if url.split('/')[-1] == 'temp.csv':
-            self.change_status(c.INSTRUCTION_ERROR_RESERVE_FILE)
+            self._change_status(c.INSTRUCTION_ERROR_RESERVE_FILE)
             return
         elif url.split('.')[-1] != 'csv':
-            self.change_status(c.INSTRUCTION_WRONG_FILE_TYPE)
+            self._change_status(c.INSTRUCTION_WRONG_FILE_TYPE)
             return
         self.change_url(url)
-        self.change_status(c.INSTRUCTION_SUCCESSFULLY_OPENED_FILE)
+        self._change_status(c.INSTRUCTION_SUCCESSFULLY_OPENED_FILE)
 
     # Change status message for ending macro record
     def change_status_record_escaped(self):
-        self.change_status(c.INSTRUCTION_RECORD_ESCAPED)
+        self._change_status(c.INSTRUCTION_RECORD_ESCAPED)

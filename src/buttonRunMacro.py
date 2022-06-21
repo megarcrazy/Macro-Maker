@@ -10,16 +10,16 @@ class ButtonRunMacro(Button):
     def __init__(self, window):
         super().__init__(window)
         self._macro_runner = MacroRunner()
-        self.initialise()
+        self._initialise()
 
-    def initialise(self):
+    def _initialise(self):
         btn = PyQt5.QtWidgets.QPushButton('Run', self._window)
         btn.setToolTip('Run a saved script')
         btn.setGeometry(100, 200, 100, 50)
-        btn.clicked.connect(self.clickme)
+        btn.clicked.connect(self._clickme)
 
     # Run script on click
-    def clickme(self):
+    def _clickme(self):
         self._macro_runner.reset()
         script_array = ScriptManager.loadScript(self._window.get_url())
         self._macro_runner.runScript(script_array)

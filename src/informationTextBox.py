@@ -10,19 +10,19 @@ class InformationTextBox(WindowObject):
         self._text_box = None
         self._text_line1 = 'No file opened.'
         self._text_line2 = 'Please open a file.'
-        self.initialise()
+        self._initialise()
 
-    def initialise(self):
+    def _initialise(self):
         self._text_box = PyQt5.QtWidgets.QLabel('', self._window)
         self._text_box.setGeometry(100, 25, 600, 50)
         self._text_box.setFont(PyQt5.QtGui.QFont('Arial', 10))
-        self.update_text()
+        self._update_text()
 
     def change_url_text(self, url):
         text = url
         file_name = text.split('/')[-1]
         self._text_line1 = f'File location: {file_name}.'
-        self.update_text()
+        self._update_text()
 
     # Instruction message gives user information on what to do.
     def change_instruction(self, status):
@@ -36,10 +36,10 @@ class InformationTextBox(WindowObject):
             self._text_line2 = 'Initiated recording. Press escape to end.'
         elif status == c.INSTRUCTION_RECORD_ESCAPED:
             self._text_line2 = 'Record escaped. Scripted saved in temp.csv'
-        self.update_text()
+        self._update_text()
 
     # Adds both lines of text
-    def update_text(self):
+    def _update_text(self):
         text1 = self._text_line1
         text2 = self._text_line2
         text = text1 + '\n' + text2

@@ -24,24 +24,24 @@ class MacroRunner:
     def runScript(self, script_array):
         print('you ran the script')
         print(script_array)
-        self.listen()
-        MacroRunner.compileScript(script_array)
-        mouse_click_script, other_script = self.splitScript(script_array)
+        self._listen()
+        MacroRunner._compileScript(script_array)
+        mouse_click_script, other_script = self._splitScript(script_array)
         mouse_click_script_thread = threading.Thread(
-            target=self.runScriptParallel, args=(mouse_click_script, c.SCRIPT_TYPE_MOUSE_CLICK,)
+            target=self._runScriptParallel, args=(mouse_click_script, c.SCRIPT_TYPE_MOUSE_CLICK,)
         )
         other_script_thread = threading.Thread(
-            target=self.runScriptParallel, args=(other_script, c.SCRIPT_TYPE_OTHER,)
+            target=self._runScriptParallel, args=(other_script, c.SCRIPT_TYPE_OTHER,)
         )
         mouse_click_script_thread.start()
         other_script_thread.start()
     
     # Wait for escaped to be pressed to interupt script
-    def listen(self):
-        keyboard_listener = pynput.keyboard.Listener(on_press=self.on_press)
+    def _listen(self):
+        keyboard_listener = pynput.keyboard.Listener(on_press=self._on_press)
         keyboard_listener.start()
     
-    def on_press(self, key):
+    def _on_press(self, key):
         if key == pynput.keyboard.Key.esc:
             # Check if already escaped
             if self._escaped:
@@ -52,7 +52,7 @@ class MacroRunner:
 
     # Seperate the mouse click component with the rest of the script
     @staticmethod
-    def splitScript(script):
+    def _splitScript(script):
         mouse_click_script = []
         other_script = []
         for command in script:
@@ -63,7 +63,7 @@ class MacroRunner:
                 other_script.append(command)
         return mouse_click_script, other_script
     
-    def runScriptParallel(self, script, script_type):
+    def _runScriptParallel(self, script, script_type):
         start_time = time.time()
         while script:
             if self._escaped:
@@ -72,10 +72,10 @@ class MacroRunner:
             time_passed = end_time - start_time
             command_time_next = float(script[0][1])
             if command_time_next < time_passed:
-                MacroRunner.runCommand(script)
-        self.checkFinished(script_type)
+                MacroRunner._runCommand(script)
+        self._checkFinished(script_type)
 
-    def checkFinished(self, script_type):
+    def _checkFinished(self, script_type):
         if script_type == c.SCRIPT_TYPE_MOUSE_CLICK:
             self._script1_finish = True
         elif script_type == c.SCRIPT_TYPE_OTHER:
@@ -88,22 +88,22 @@ class MacroRunner:
     # Finds the command catagory and activates the corresponding function
     # options: 'on_click', 'on_scroll', 'on_press', 'on_hotkey'
     @staticmethod
-    def runCommand(script):
+    def _runCommand(script):
         command = script.pop(0)
         command_type = command[0]
         command_time = command[1]
         if command_type == 'on_click':
-            MacroRunner.run_on_click(command_time, command)
+            MacroRunner._run_on_click(command_time, command)
         elif command_type == 'on_scroll':
-            MacroRunner.run_on_scroll(command_time, command)
+            MacroRunner._run_on_scroll(command_time, command)
         elif command_type == 'on_press':
-            MacroRunner.run_on_press(command_time, command)
+            MacroRunner._run_on_press(command_time, command)
         elif command_type == 'on_hotkey':
-            MacroRunner.run_on_hotkey(command_time, command)
+            MacroRunner._run_on_hotkey(command_time, command)
 
     # Adjusts the numbers in the data stored in the csv file
     @staticmethod
-    def compileScript(script_array):
+    def _compileScript(script_array):
         # Adjust the trigger time of on_click commands based on the DELAY required
         for command in script_array:
             if command[0] == 'on_click':
@@ -117,7 +117,7 @@ class MacroRunner:
     """
 
     @staticmethod
-    def run_on_click(command_time, command):
+    def _run_on_click(command_time, command):
         x = int(command[2])
         y = int(command[3])
         button = None
@@ -130,18 +130,18 @@ class MacroRunner:
         MacroCommands.command_click(command_time, x, y, button)
     
     @staticmethod
-    def run_on_scroll(command_time, command):
+    def _run_on_scroll(command_time, command):
         dx = command[2]
         dy = command[3]
         MacroCommands.command_scroll(command_time, dx, dy)
     
     @staticmethod
-    def run_on_press(command_time, command):
+    def _run_on_press(command_time, command):
         key = command[2]
         MacroCommands.command_press(command_time, key)
 
     @staticmethod
-    def run_on_hotkey(command_time, command):
+    def _run_on_hotkey(command_time, command):
         keys = command[2]
         keys = literal_eval(keys)
         keys = list(keys)
